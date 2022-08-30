@@ -1,7 +1,18 @@
-POST http://localhost:8080/books
+POST http://localhost:8080/api/books
 Content-Type: application/json
 
 {
-  "name":"Henzel",
+  "name":"ALaLo",
   "price": 100
+}
+
+####
+
+PUT http://localhost:8080/api/books
+Content-Type: application/json
+
+{
+  "id": 5,
+  "name":"Mu-Mu",
+  "price": 2000
 }
