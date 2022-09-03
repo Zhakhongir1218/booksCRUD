@@ -23,7 +23,10 @@ func getAll(writer http.ResponseWriter, request *http.Request, params httprouter
 	db := database.Init()
 	writer.Header().Set("Content-Type", "application/json")
 	books := database.GetAllBooks(db)
-	json.NewEncoder(writer).Encode(books)
+	err := json.NewEncoder(writer).Encode(books)
+	if err != nil {
+		return
+	}
 }
 
 func updateBook(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
@@ -43,7 +46,7 @@ func insertBook(writer http.ResponseWriter, request *http.Request, params httpro
 	writer.Header().Set("Content-Type", "application/json")
 	var b book.Book
 	_ = json.NewDecoder(request.Body).Decode(&b)
-	database.Create(b, db)
+	database.Insert(b, db)
 	err := db.Close()
 	if err != nil {
 		log.Println("Closing connection error")
