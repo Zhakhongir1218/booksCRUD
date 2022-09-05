@@ -2,7 +2,7 @@ POST http://localhost:8080/api/books
 Content-Type: application/json
 
 {
-  "name":"ALaLo",
+  "name":"Moloko",
   "price": 100
 }
 

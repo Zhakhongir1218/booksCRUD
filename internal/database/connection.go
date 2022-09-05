@@ -1,14 +1,15 @@
 package database
 
 import (
+	"booksCRUD/config"
 	"database/sql"
 	_ "github.com/lib/pq"
 	"log"
 )
 
 func Init() *sql.DB {
-	connStr := "user=postgres password=zhakhongir1218 dbname=go-crud sslmode=disable"
-	db, err := sql.Open("postgres", connStr)
+	_, dbConfig := config.LoadConfig(".", "db.properties")
+	db, err := sql.Open("postgres", dbConfig)
 	if err != nil {
 		panic(err)
 	}

@@ -1,0 +1,4 @@
+network.type: "tcp"
+address: ":8080"
+
+db.properties: "user=postgres password=zhakhongir1218 dbname=go-crud sslmode=disable"

@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"booksCRUD/config"
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net"
@@ -9,7 +10,9 @@ import (
 )
 
 func CreateServer(router *httprouter.Router) {
-	listener, err := net.Listen("tcp", ":8080")
+	_, address := config.LoadConfig(".", "address")
+	_, networkType := config.LoadConfig(".", "network.type")
+	listener, err := net.Listen(networkType, address)
 	if err != nil {
 		panic(err)
 	}
