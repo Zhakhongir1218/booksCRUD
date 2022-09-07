@@ -2,11 +2,12 @@ package database
 
 import (
 	"booksCRUD/internal/book"
+	"booksCRUD/internal/configuration"
 	"fmt"
 	"log"
 )
 
-var db = Init()
+var db = configuration.InitialConnection
 
 const insertStatement string = "insert into books (name, price) values ($1, $2)"
 const findByIdStatement string = "select * from books where id=$1"

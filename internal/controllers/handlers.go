@@ -2,7 +2,8 @@ package controllers
 
 import (
 	"booksCRUD/internal/book"
-	"booksCRUD/internal/database"
+	"booksCRUD/internal/book/database"
+	"booksCRUD/internal/user"
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"log"
@@ -16,6 +17,7 @@ func RouterCreation() *httprouter.Router {
 	router.GET("/api/books", getAll)
 	router.POST("/api/books", insertBook)
 	router.PUT("/api/books", updateBook)
+	router.POST("/api/sign-up", signUp)
 	return router
 }
 
@@ -52,4 +54,16 @@ func findBookById(writer http.ResponseWriter, request *http.Request, params http
 	var b book.Book
 	b = database.FindBookById(idAsInt)
 	json.NewEncoder(writer).Encode(b)
+}
+
+func signUp(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	writer.Header().Set("Content-Type", "application/json")
+	var u user.User
+	_ = json.NewDecoder(request.Body).Decode(&u)
+	user.SignUp(u.Name, u.Password)
+	writer.WriteHeader(200)
+	_, err := writer.Write([]byte(u.Name))
+	if err != nil {
+		return
+	}
 }

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"booksCRUD/internal/book/controllers"
 	"booksCRUD/internal/configuration"
+	"booksCRUD/internal/controllers"
 )
 
 func main() {

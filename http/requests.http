@@ -2,7 +2,7 @@ POST http://localhost:8080/api/books
 Content-Type: application/json
 
 {
-  "name":"dv",
+  "name":"newOne",
   "price": 400
 }
 
@@ -12,7 +12,17 @@ PUT http://localhost:8080/api/books
 Content-Type: application/json
 
 {
-  "id": 5,
-  "name":"Mu-Mu",
+  "id": 10,
+  "name":"Mu-dsf",
   "price": 2000
+}
+
+####
+
+POST http://localhost:8080/api/sign-up
+Content-Type: application/json
+
+{
+  "name":"Zhakhongir",
+  "password": "qwerty007"
 }
