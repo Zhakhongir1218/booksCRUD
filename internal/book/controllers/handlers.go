@@ -20,9 +20,8 @@ func RouterCreation() *httprouter.Router {
 }
 
 func getAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	db := database.Init()
 	writer.Header().Set("Content-Type", "application/json")
-	books := database.GetAllBooks(db)
+	books := database.GetAllBooks()
 	err := json.NewEncoder(writer).Encode(books)
 	if err != nil {
 		return
@@ -30,31 +29,20 @@ func getAll(writer http.ResponseWriter, request *http.Request, params httprouter
 }
 
 func updateBook(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	db := database.Init()
 	writer.Header().Set("Content-Type", "application/json")
 	var b book.Book
 	_ = json.NewDecoder(request.Body).Decode(&b)
-	database.UpdateBook(b, db)
-	err := db.Close()
-	if err != nil {
-		log.Println("Closing connection error")
-	}
+	database.UpdateBook(b)
 }
 
 func insertBook(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	db := database.Init()
 	writer.Header().Set("Content-Type", "application/json")
 	var b book.Book
 	_ = json.NewDecoder(request.Body).Decode(&b)
-	database.Insert(b, db)
-	err := db.Close()
-	if err != nil {
-		log.Println("Closing connection error")
-	}
+	database.Insert(b)
 }
 
 func findBookById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	db := database.Init()
 	writer.Header().Set("Content-Type", "application/json")
 	id := params.ByName("id")
 	idAsInt, err := strconv.Atoi(id)
@@ -62,6 +50,6 @@ func findBookById(writer http.ResponseWriter, request *http.Request, params http
 		log.Println(err)
 	}
 	var b book.Book
-	b = database.FindBookById(idAsInt, db)
+	b = database.FindBookById(idAsInt)
 	json.NewEncoder(writer).Encode(b)
 }
