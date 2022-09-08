@@ -18,6 +18,7 @@ func RouterCreation() *httprouter.Router {
 	router.POST("/api/books", insertBook)
 	router.PUT("/api/books", updateBook)
 	router.POST("/api/sign-up", signUp)
+	router.POST("/api/sign-in", signIn)
 	return router
 }
 
@@ -63,6 +64,18 @@ func signUp(writer http.ResponseWriter, request *http.Request, params httprouter
 	user.SignUp(u.Name, u.Password)
 	writer.WriteHeader(200)
 	_, err := writer.Write([]byte(u.Name))
+	if err != nil {
+		return
+	}
+}
+
+func signIn(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	writer.Header().Set("Content-Type", "application/json")
+	var u user.User
+	_ = json.NewDecoder(request.Body).Decode(&u)
+	token := user.SignIn(u.Name, u.Password)
+	writer.WriteHeader(200)
+	_, err := writer.Write([]byte(token))
 	if err != nil {
 		return
 	}

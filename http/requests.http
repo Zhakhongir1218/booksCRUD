@@ -26,3 +26,12 @@ Content-Type: application/json
   "name":"Zhakhongir",
   "password": "qwerty007"
 }
+####
+
+POST http://localhost:8080/api/sign-in
+Content-Type: application/json
+
+{
+  "name":"Zhakhongir",
+  "password": "qwerty007"
+}
