@@ -1,9 +1,9 @@
-FROM golang:latest
+FROM golang:1.19
 
+ENV GOPATH=/
 COPY ./ ./
 
-RUN go build -o app .
-CMD [ "./main" ]
+RUN go mod download
+RUN go build -o books-crud ./cmd/main/app.go
 
-EXPOSE 8080
-
+CMD ["./books-crud"]
