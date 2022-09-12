@@ -9,6 +9,8 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+
+	_ "booksCRUD/docs"
 )
 
 func RouterCreation() *httprouter.Router {

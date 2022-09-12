@@ -1,0 +1,11 @@
+host: localhost:8080
+info:
+  contact:
+    email: martin7.heinz@gmail.com
+    name: API Support
+  description: Swagger API for Golang Project Blueprint.
+  termsOfService: http://swagger.io/terms/
+  title: books-crud-service
+  version: "1.0"
+paths: {}
+swagger: "2.0"
