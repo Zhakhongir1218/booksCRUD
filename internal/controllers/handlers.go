@@ -1,84 +1,67 @@
 package controllers
 
 import (
+	_ "booksCRUD/docs"
 	"booksCRUD/internal/book"
 	"booksCRUD/internal/book/database"
-	"booksCRUD/internal/user"
-	"encoding/json"
-	"github.com/julienschmidt/httprouter"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/swagger"
 	"log"
-	"net/http"
 	"strconv"
-
-	_ "booksCRUD/docs"
 )
 
-func RouterCreation() *httprouter.Router {
-	router := httprouter.New()
-	router.GET("/api/books/:id", findBookById)
-	router.GET("/api/books", getAll)
-	router.POST("/api/books", insertBook)
-	router.PUT("/api/books", updateBook)
-	router.POST("/api/sign-up", signUp)
-	router.POST("/api/sign-in", signIn)
-	return router
+type ResponseHTTP struct {
+	Success bool        `json:"success"`
+	Data    interface{} `json:"data"`
+	Message string      `json:"message"`
 }
 
-func getAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	writer.Header().Set("Content-Type", "application/json")
-	books := database.GetAllBooks()
-	err := json.NewEncoder(writer).Encode(books)
-	if err != nil {
-		return
-	}
+// @title Book App
+// @version 1.0
+// @description This is an API for Book Application
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:8080
+func RouterCreation() {
+	app := fiber.New()
+	app.Get("/swagger/*", swagger.HandlerDefault) // default
+	app.Get("/api/books/:id", findBookById)
+	app.Get("/api/books", getAllBooks)
+
+	log.Fatal(app.Listen(":8080"))
 }
 
-func updateBook(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	writer.Header().Set("Content-Type", "application/json")
-	var b book.Book
-	_ = json.NewDecoder(request.Body).Decode(&b)
-	database.UpdateBook(b)
+// GetBooks is a function to get all books
+// @Summary Get all
+// @Description Get all books
+// @Tags books
+// @Accept json
+// @Produce json
+// @Failure 404 {object} ResponseHTTP{}
+// @Failure 503 {object} ResponseHTTP{}
+// @Router /api/books [get]
+func getAllBooks(ctx *fiber.Ctx) error {
+	return ctx.JSON(database.GetAllBooks())
 }
 
-func insertBook(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	writer.Header().Set("Content-Type", "application/json")
-	var b book.Book
-	_ = json.NewDecoder(request.Body).Decode(&b)
-	database.Insert(b)
-}
-
-func findBookById(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	writer.Header().Set("Content-Type", "application/json")
-	id := params.ByName("id")
-	idAsInt, err := strconv.Atoi(id)
-	if err != nil {
-		log.Println(err)
-	}
+// GetBookByID is a function to get a book by ID
+// @Summary Get book by ID
+// @Description Get book by ID
+// @Tags books
+// @Accept json
+// @Produce json
+// @Param id path int true "Book ID"
+// @Failure 404 {object} ResponseHTTP{}
+// @Failure 503 {object} ResponseHTTP{}
+// @Router /api/books/{id} [get]
+func findBookById(c *fiber.Ctx) error {
+	msg := c.Params("id")
+	log.Println(msg)
+	idAsInt, _ := strconv.Atoi(msg)
 	var b book.Book
 	b = database.FindBookById(idAsInt)
-	json.NewEncoder(writer).Encode(b)
-}
 
-func signUp(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	writer.Header().Set("Content-Type", "application/json")
-	var u user.User
-	_ = json.NewDecoder(request.Body).Decode(&u)
-	user.SignUp(u.Name, u.Password)
-	writer.WriteHeader(200)
-	_, err := writer.Write([]byte(u.Name))
-	if err != nil {
-		return
-	}
-}
-
-func signIn(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	writer.Header().Set("Content-Type", "application/json")
-	var u user.User
-	_ = json.NewDecoder(request.Body).Decode(&u)
-	token := user.SignIn(u.Name, u.Password)
-	writer.WriteHeader(200)
-	_, err := writer.Write([]byte(token))
-	if err != nil {
-		return
-	}
+	return c.JSON(b)
 }

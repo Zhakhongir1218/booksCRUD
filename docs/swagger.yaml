@@ -1,11 +1,63 @@
-host: localhost:8080
+definitions:
+  controllers.ResponseHTTP:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
 info:
-  contact:
-    email: martin7.heinz@gmail.com
-    name: API Support
-  description: Swagger API for Golang Project Blueprint.
-  termsOfService: http://swagger.io/terms/
-  title: books-crud-service
+  contact: {}
+  description: This is an API for Book Application
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Book App
   version: "1.0"
-paths: {}
+paths:
+  /api/books:
+    get:
+      consumes:
+      - application/json
+      description: Get all books
+      produces:
+      - application/json
+      responses:
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ResponseHTTP'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/controllers.ResponseHTTP'
+      summary: Get all
+      tags:
+      - books
+  /api/books/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get book by ID
+      parameters:
+      - description: Book ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ResponseHTTP'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/controllers.ResponseHTTP'
+      summary: Get book by ID
+      tags:
+      - books
 swagger: "2.0"

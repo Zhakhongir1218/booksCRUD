@@ -1,19 +1,16 @@
 package main
 
 import (
-	"booksCRUD/internal/configuration"
 	"booksCRUD/internal/controllers"
 )
 
-// @title books-crud-service
+// @title Book App
 // @version 1.0
-// @description Swagger API for Golang Project Blueprint.
-// @termsOfService http://swagger.io/terms/
-// @host localhost:8080
+// @description This is an API for Book Application
 
-// @contact.name API Support
-// @contact.email martin7.heinz@gmail.com
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
 func main() {
-	router := controllers.RouterCreation()
-	configuration.CreateServer(router)
+	controllers.RouterCreation()
 }
