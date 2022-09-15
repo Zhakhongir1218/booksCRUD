@@ -66,9 +66,9 @@ func SignIn(userName string, password string) string {
 
 func ReadToken(token string) User {
 	decodedToken, _ := GetClaimsFromToken(token)
-	var name string = cast.ToString(decodedToken["name"])
-	var password string = cast.ToString(decodedToken["password"])
-	var status string = cast.ToString(decodedToken["status"])
+	var name = cast.ToString(decodedToken["name"])
+	var password = cast.ToString(decodedToken["password"])
+	var status = cast.ToString(decodedToken["status"])
 
 	var s State
 

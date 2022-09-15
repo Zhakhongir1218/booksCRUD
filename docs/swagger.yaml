@@ -38,6 +38,8 @@ paths:
           description: Service Unavailable
           schema:
             $ref: '#/definitions/controllers.ResponseHTTP'
+      security:
+      - ApiKeyAuth: []
       summary: Get all
       tags:
       - books
@@ -63,6 +65,8 @@ paths:
           description: Service Unavailable
           schema:
             $ref: '#/definitions/controllers.ResponseHTTP'
+      security:
+      - ApiKeyAuth: []
       summary: Get book by ID
       tags:
       - books
@@ -120,7 +124,7 @@ paths:
       - auth
 securityDefinitions:
   ApiKeyAuth:
-    in: header
+    in: Jwt
     name: Authorization
     type: apiKey
 swagger: "2.0"

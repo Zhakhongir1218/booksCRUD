@@ -9,6 +9,11 @@
     "paths": {
         "/api/books": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get all books",
                 "consumes": [
                     "application/json"
@@ -38,6 +43,11 @@
         },
         "/api/books/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get book by ID",
                 "consumes": [
                     "application/json"
@@ -187,7 +197,7 @@
         "ApiKeyAuth": {
             "type": "apiKey",
             "name": "Authorization",
-            "in": "header"
+            "in": "Jwt"
         }
     }
 }

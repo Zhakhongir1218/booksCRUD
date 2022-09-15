@@ -18,6 +18,11 @@ const docTemplate = `{
     "paths": {
         "/api/books": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get all books",
                 "consumes": [
                     "application/json"
@@ -47,6 +52,11 @@ const docTemplate = `{
         },
         "/api/books/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get book by ID",
                 "consumes": [
                     "application/json"
@@ -196,7 +206,7 @@ const docTemplate = `{
         "ApiKeyAuth": {
             "type": "apiKey",
             "name": "Authorization",
-            "in": "header"
+            "in": "Jwt"
         }
     }
 }`

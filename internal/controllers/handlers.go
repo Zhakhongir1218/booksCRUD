@@ -73,6 +73,7 @@ func signUp(ctx *fiber.Ctx) error {
 // GetBooks is a function to get all books
 // @Summary Get all
 // @Description Get all books
+// @Security ApiKeyAuth
 // @Tags books
 // @Accept json
 // @Produce json
@@ -86,6 +87,7 @@ func getAllBooks(ctx *fiber.Ctx) error {
 // GetBookByID is a function to get a book by ID
 // @Summary Get book by ID
 // @Description Get book by ID
+// @Security ApiKeyAuth
 // @Tags books
 // @Accept json
 // @Produce json
@@ -95,7 +97,7 @@ func getAllBooks(ctx *fiber.Ctx) error {
 // @Router /api/books/{id} [get]
 func findBookById(c *fiber.Ctx) error {
 	headerMap := c.GetReqHeaders()
-	var jwtToken string = headerMap["Jwt"]
+	var jwtToken string = headerMap["Authorization"]
 	if jwtToken == "" {
 		return fmt.Errorf("did't find out a token")
 	}
