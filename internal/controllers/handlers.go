@@ -4,6 +4,8 @@ import (
 	_ "booksCRUD/docs"
 	"booksCRUD/internal/book"
 	"booksCRUD/internal/book/database"
+	"booksCRUD/internal/user"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger"
 	"log"
@@ -16,21 +18,56 @@ type ResponseHTTP struct {
 	Message string      `json:"message"`
 }
 
-// @title Book App
-// @version 1.0
-// @description This is an API for Book Application
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
 // @host localhost:8080
 func RouterCreation() {
 	app := fiber.New()
 	app.Get("/swagger/*", swagger.HandlerDefault) // default
 	app.Get("/api/books/:id", findBookById)
 	app.Get("/api/books", getAllBooks)
+	app.Post("/auth/sign-up", signUp)
+	app.Post("/auth/sign-in", signIn)
 
 	log.Fatal(app.Listen(":8080"))
+}
+
+// sign-in functionality
+// @Summary sign-in
+// @Description sign-in process
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param user body user.User true "AAA 123"
+// @Failure 404 {object} ResponseHTTP{}
+// @Failure 503 {object} ResponseHTTP{}
+// @Router /auth/sign-in [post]
+func signIn(ctx *fiber.Ctx) error {
+	u := new(user.User)
+	err := ctx.BodyParser(u)
+	if err != nil {
+		return err
+	}
+	token := user.SignIn(u.Name, u.Password)
+	return ctx.JSON(ResponseHTTP{true, u.Name, token})
+}
+
+// sign-up functionality
+// @Summary sign-up
+// @Description Sign-Up process
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param user body user.User true "AAA 123"
+// @Failure 404 {object} ResponseHTTP{}
+// @Failure 503 {object} ResponseHTTP{}
+// @Router /auth/sign-up [post]
+func signUp(ctx *fiber.Ctx) error {
+	u := new(user.User)
+	err := ctx.BodyParser(u)
+	if err != nil {
+		return err
+	}
+	user.SignUp(u.Name, u.Password)
+	return ctx.JSON(ResponseHTTP{true, u.Name, "signed-up"})
 }
 
 // GetBooks is a function to get all books
@@ -57,6 +94,13 @@ func getAllBooks(ctx *fiber.Ctx) error {
 // @Failure 503 {object} ResponseHTTP{}
 // @Router /api/books/{id} [get]
 func findBookById(c *fiber.Ctx) error {
+	headerMap := c.GetReqHeaders()
+	var jwtToken string = headerMap["Jwt"]
+	if jwtToken == "" {
+		return fmt.Errorf("did't find out a token")
+	}
+	u := user.ReadToken(jwtToken)
+	fmt.Println(u)
 	msg := c.Params("id")
 	log.Println(msg)
 	idAsInt, _ := strconv.Atoi(msg)

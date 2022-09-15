@@ -7,12 +7,18 @@ definitions:
       success:
         type: boolean
     type: object
+  user.User:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      status:
+        type: integer
+    type: object
 info:
   contact: {}
   description: This is an API for Book Application
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Book App
   version: "1.0"
 paths:
@@ -60,4 +66,61 @@ paths:
       summary: Get book by ID
       tags:
       - books
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: sign-in process
+      parameters:
+      - description: AAA 123
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.User'
+      produces:
+      - application/json
+      responses:
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ResponseHTTP'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/controllers.ResponseHTTP'
+      summary: sign-in
+      tags:
+      - auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: Sign-Up process
+      parameters:
+      - description: AAA 123
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.User'
+      produces:
+      - application/json
+      responses:
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ResponseHTTP'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/controllers.ResponseHTTP'
+      summary: sign-up
+      tags:
+      - auth
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

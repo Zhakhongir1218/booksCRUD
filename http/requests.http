@@ -24,7 +24,8 @@ Content-Type: application/json
 
 {
   "name":"Zhakhongir",
-  "password": "qwerty007"
+  "password":"qwerty007",
+  "status":2
 }
 ####
 
@@ -33,5 +34,12 @@ Content-Type: application/json
 
 {
   "name":"Zhakhongir",
-  "password": "qwerty007"
+  "password":"qwerty007"
 }
+
+###
+
+GET http://localhost:8080/api/books/15
+Content-Type: application/json
+Jwt: eydfsnjksdfiu342rnj23nr4kjn.32rnjkndsjfhnuihnk
+sdf: dsfsdf
