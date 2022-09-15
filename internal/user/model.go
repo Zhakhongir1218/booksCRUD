@@ -1,6 +1,8 @@
 package user
 
 import (
+	"booksCRUD/pkg/util"
+	"fmt"
 	"github.com/spf13/cast"
 	"golang.org/x/crypto/bcrypt"
 	"os/user"
@@ -13,10 +15,6 @@ type User struct {
 	Status   State  `json:"status"`
 }
 
-type Dto struct {
-	Name string `json:"name"`
-}
-
 type State int8
 
 const (
@@ -24,15 +22,19 @@ const (
 	REGISTERED   State = 2
 )
 
+type Dto struct {
+	Name string `json:"name"`
+}
+
 const hashCost = 10
 
 func SignUp(userName string, password string) Dto {
 	userByName := FindUserByName(userName)
 	if strings.EqualFold(userByName.Name, userName) {
-		panic("user already exists")
+		_ = fmt.Errorf("user already exists")
 	}
 	if userByName.Status == REGISTERED {
-		panic("user has already registered")
+		_ = fmt.Errorf("user has already registered")
 	}
 	p := []byte(password)
 	hashedPassword, _ := bcrypt.GenerateFromPassword(p, hashCost)
@@ -60,12 +62,12 @@ func SignIn(userName string, password string) string {
 	if err != nil {
 		panic(err)
 	}
-	token, _ := CreateToken(userByName.Name, user.User{})
+	token, _ := util.CreateToken(userByName.Name, user.User{})
 	return token
 }
 
 func ReadToken(token string) User {
-	decodedToken, _ := GetClaimsFromToken(token)
+	decodedToken, _ := util.GetClaimsFromToken(token)
 	var name = cast.ToString(decodedToken["name"])
 	var password = cast.ToString(decodedToken["password"])
 	var status = cast.ToString(decodedToken["status"])
@@ -79,10 +81,10 @@ func ReadToken(token string) User {
 		s = REGISTERED
 	}
 
-	user := User{
+	u := User{
 		Name:     name,
 		Password: password,
 		Status:   s,
 	}
-	return user
+	return u
 }

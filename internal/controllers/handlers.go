@@ -3,7 +3,6 @@ package controllers
 import (
 	_ "booksCRUD/docs"
 	"booksCRUD/internal/book"
-	"booksCRUD/internal/book/database"
 	"booksCRUD/internal/user"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
@@ -24,6 +23,7 @@ func RouterCreation() {
 	app.Get("/swagger/*", swagger.HandlerDefault) // default
 	app.Get("/api/books/:id", findBookById)
 	app.Get("/api/books", getAllBooks)
+	app.Post("/api/books", createNewBook)
 	app.Post("/auth/sign-up", signUp)
 	app.Post("/auth/sign-in", signIn)
 
@@ -70,25 +70,47 @@ func signUp(ctx *fiber.Ctx) error {
 	return ctx.JSON(ResponseHTTP{true, u.Name, "signed-up"})
 }
 
-// GetBooks is a function to get all books
-// @Summary Get all
-// @Description Get all books
+// CreateNewBook is a function to create a new book
+// @Summary Book's creation
+// @Description Create new book
 // @Security ApiKeyAuth
-// @Tags books
+// @Tags book
+// @Accept json
+// @Produce json
+// @Param book body book.Book true "1, Some-Book, 200"
+// @Failure 404 {object} ResponseHTTP{}
+// @Failure 503 {object} ResponseHTTP{}
+// @Router /api/books [post]
+func createNewBook(ctx *fiber.Ctx) error {
+	_, err := jwtValidation(ctx)
+	if err != nil {
+		return err
+	}
+	b := new(book.Book)
+	err = ctx.BodyParser(b)
+	book.CreateNewBook(*b)
+	return ctx.JSON(ResponseHTTP{true, b.Name, "Book was successfully created"})
+}
+
+// GetBooks is a function to get all book
+// @Summary Get all
+// @Description Get all book
+// @Security ApiKeyAuth
+// @Tags book
 // @Accept json
 // @Produce json
 // @Failure 404 {object} ResponseHTTP{}
 // @Failure 503 {object} ResponseHTTP{}
 // @Router /api/books [get]
 func getAllBooks(ctx *fiber.Ctx) error {
-	return ctx.JSON(database.GetAllBooks())
+	return ctx.JSON(book.GetAllBooks())
 }
 
 // GetBookByID is a function to get a book by ID
 // @Summary Get book by ID
 // @Description Get book by ID
 // @Security ApiKeyAuth
-// @Tags books
+// @Tags book
 // @Accept json
 // @Produce json
 // @Param id path int true "Book ID"
@@ -96,18 +118,24 @@ func getAllBooks(ctx *fiber.Ctx) error {
 // @Failure 503 {object} ResponseHTTP{}
 // @Router /api/books/{id} [get]
 func findBookById(c *fiber.Ctx) error {
-	headerMap := c.GetReqHeaders()
-	var jwtToken string = headerMap["Authorization"]
-	if jwtToken == "" {
-		return fmt.Errorf("did't find out a token")
+	_, err := jwtValidation(c)
+	if err != nil {
+		return err
 	}
-	u := user.ReadToken(jwtToken)
-	fmt.Println(u)
 	msg := c.Params("id")
 	log.Println(msg)
 	idAsInt, _ := strconv.Atoi(msg)
-	var b book.Book
-	b = database.FindBookById(idAsInt)
-
+	b := book.GetBookById(idAsInt)
 	return c.JSON(b)
+}
+
+func jwtValidation(c *fiber.Ctx) (user.User, error) {
+	headerMap := c.GetReqHeaders()
+	var jwtToken = headerMap["Authorization"]
+	if jwtToken == "" {
+		return user.User{}, fmt.Errorf("did't find out a token")
+	}
+	u := user.ReadToken(jwtToken)
+	fmt.Println(u)
+	return u, nil
 }

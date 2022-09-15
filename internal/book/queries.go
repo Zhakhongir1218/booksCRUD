@@ -1,7 +1,6 @@
-package database
+package book
 
 import (
-	"booksCRUD/internal/book"
 	"booksCRUD/internal/configuration"
 	"fmt"
 	"log"
@@ -9,12 +8,12 @@ import (
 
 var db = configuration.InitialConnection
 
-const insertStatement string = "insert into books (name, price) values ($1, $2)"
-const findByIdStatement string = "select * from books where id=$1"
-const updateStatement string = "update books set name = $1, price = $2 where id = $3"
-const getAllStatement string = "select * from books"
+const insertStatement string = "insert into book (name, price) values ($1, $2)"
+const findByIdStatement string = "select * from book where id=$1"
+const updateStatement string = "update book set name = $1, price = $2 where id = $3"
+const getAllStatement string = "select * from book"
 
-func Insert(book book.Book) {
+func Insert(book Book) {
 	_, err := db.Exec(insertStatement, book.Name, book.Price)
 	if err != nil {
 		panic(err)
@@ -22,9 +21,9 @@ func Insert(book book.Book) {
 	log.Println("Book was created")
 }
 
-func FindBookById(id int) book.Book {
+func FindBookById(id int) Book {
 	row := db.QueryRow(findByIdStatement, id)
-	b := book.Book{}
+	b := Book{}
 	err := row.Scan(&b.Id, &b.Name, &b.Price)
 	if err != nil {
 		log.Println(err)
@@ -33,21 +32,21 @@ func FindBookById(id int) book.Book {
 	return b
 }
 
-func UpdateBook(book book.Book) {
+func UpdateBook(book Book) {
 	_, err := db.Exec(updateStatement, book.Name, book.Price, book.Id)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func GetAllBooks() []book.Book {
-	var books []book.Book
+func GetBooks() []Book {
+	var books []Book
 	rows, err := db.Query(getAllStatement)
 	if err != nil {
 		panic(err)
 	}
 	for rows.Next() {
-		b := book.Book{}
+		b := Book{}
 		err := rows.Scan(&b.Id, &b.Name, &b.Price)
 		if err != nil {
 			fmt.Println(err)

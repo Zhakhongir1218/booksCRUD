@@ -23,7 +23,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
-                "description": "Get all books",
+                "description": "Get all book",
                 "consumes": [
                     "application/json"
                 ],
@@ -31,9 +31,52 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "books"
+                    "book"
                 ],
                 "summary": "Get all",
+                "responses": {
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.ResponseHTTP"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.ResponseHTTP"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create new book",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "book"
+                ],
+                "summary": "Book's creation",
+                "parameters": [
+                    {
+                        "description": "1, Some-Book, 200",
+                        "name": "book",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/book.Book"
+                        }
+                    }
+                ],
                 "responses": {
                     "404": {
                         "description": "Not Found",
@@ -65,7 +108,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "books"
+                    "book"
                 ],
                 "summary": "Get book by ID",
                 "parameters": [
@@ -175,6 +218,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "book.Book": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                }
+            }
+        },
         "controllers.ResponseHTTP": {
             "type": "object",
             "properties": {
