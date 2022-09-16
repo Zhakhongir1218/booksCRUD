@@ -1,9 +1,17 @@
-FROM golang:1.19
+# syntax=docker/dockerfile:experimental
+FROM golang:1.19 AS builder
 
 ENV GOPATH=/
-COPY ./ ./
-
+WORKDIR /app
+ADD go.mod .
+ADD go.sum .
 RUN go mod download
-RUN go build -o book-crud ./cmd/main/app.go
+COPY ./ ./
+USER root
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o book-crud ./cmd/main/app.go
 
-CMD ["./books-crud"]
+FROM alpine:latest
+WORKDIR /root
+COPY --from=builder /app/book-crud .
+EXPOSE 8080
+ENTRYPOINT ["./book-crud"]
