@@ -28,17 +28,17 @@ type Dto struct {
 
 const hashCost = 10
 
-func SignUp(userName string, password string) Dto {
+func (u *User) SignUp(userName string, password string) Dto {
 	userByName := FindUserByName(userName)
 	if strings.EqualFold(userByName.Name, userName) {
-		_ = fmt.Errorf("user already exists")
+		fmt.Errorf("user already exists")
 	}
 	if userByName.Status == REGISTERED {
 		_ = fmt.Errorf("user has already registered")
 	}
 	p := []byte(password)
 	hashedPassword, _ := bcrypt.GenerateFromPassword(p, hashCost)
-	var newUser User = User{
+	var newUser = User{
 		Name:     userName,
 		Password: string(hashedPassword),
 		Status:   REGISTERED,
@@ -48,10 +48,13 @@ func SignUp(userName string, password string) Dto {
 	return userDto
 }
 
-func SignIn(userName string, password string) string {
+func (u *User) SignIn(userName string, password string) string {
 	userByName := FindUserByName(userName)
 	if userByName.Name == "" {
-		panic("System didn't find a user")
+		err := fmt.Errorf("System didn't find a user")
+		if err != nil {
+			return ""
+		}
 	}
 	if userByName.Status == UNREGISTERED {
 		panic("User was not registered yet")
@@ -66,7 +69,7 @@ func SignIn(userName string, password string) string {
 	return token
 }
 
-func ReadToken(token string) User {
+func (u *User) ReadToken(token string) User {
 	decodedToken, _ := util.GetClaimsFromToken(token)
 	var name = cast.ToString(decodedToken["name"])
 	var password = cast.ToString(decodedToken["password"])
@@ -81,10 +84,10 @@ func ReadToken(token string) User {
 		s = REGISTERED
 	}
 
-	u := User{
+	user := User{
 		Name:     name,
 		Password: password,
 		Status:   s,
 	}
-	return u
+	return user
 }

@@ -6,10 +6,9 @@ import (
 	"log"
 )
 
-var InitialConnection = Init()
+var InitialConnectionPostgres = Init()
 
 func Init() *sql.DB {
-	//_, dbConfig := LoadConfig(".", "database.properties")
 	db, err := sql.Open("postgres", "user=postgres password=zhakhongir1218 dbname=go-crud sslmode=disable")
 	if err != nil {
 		panic(err)

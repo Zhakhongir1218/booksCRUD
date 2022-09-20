@@ -10,17 +10,25 @@ type Book struct {
 	Price uint   `json:"price"`
 }
 
-func GetBookById(idAsInt int) Book {
-	return FindBookById(idAsInt)
+func (b *Book) GetBookById(idAsInt int, db CrudRepository) Book {
+	return db.FindBookById(idAsInt)
 }
 
-func CreateNewBook(b Book) {
-	if b.Name == "" {
+func (b *Book) CreateNewBook(book Book, db CrudRepository) {
+	if book.Name == "" {
 		_ = fmt.Errorf("Book's name can't be empty")
 	}
-	Insert(b)
+	db.Insert(book)
 }
 
-func GetAllBooks() []Book {
-	return GetBooks()
+func (b *Book) GetAllBooks(db CrudRepository) []Book {
+	return db.GetBooks()
+}
+
+func (b *Book) UpdateBook(book Book, db CrudRepository) Book {
+	if book.Name == "" {
+		_ = fmt.Errorf("Book's name can't be empty")
+	}
+	db.UpdateBook(book)
+	return book
 }

@@ -79,6 +79,33 @@ paths:
       summary: Book's creation
       tags:
       - book
+    put:
+      consumes:
+      - application/json
+      description: Update new book
+      parameters:
+      - description: 1, Some-Book, 200
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/book.Book'
+      produces:
+      - application/json
+      responses:
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controllers.ResponseHTTP'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/controllers.ResponseHTTP'
+      security:
+      - ApiKeyAuth: []
+      summary: Book's update
+      tags:
+      - book
   /api/books/{id}:
     get:
       consumes:

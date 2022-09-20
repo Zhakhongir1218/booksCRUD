@@ -16,7 +16,7 @@ func LoadConfig(configPath string, propertyName string) (error, string) {
 	v.SetConfigName("properties")
 	v.SetConfigType("yaml")
 	v.AutomaticEnv()
-	v.AddConfigPath(configPath)
+	v.AddConfigPath("properties.yaml")
 
 	if err := v.ReadInConfig(); err != nil {
 		return fmt.Errorf("failed to read the configuration file: %s", err), ""

@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-var db = configuration.InitialConnection
+var db = configuration.InitialConnectionPostgres
 
 const insertStatement string = "insert into account (name, password) values ($1, $2)"
 const findByUserNameStatement string = "select name, password from account where name=$1"

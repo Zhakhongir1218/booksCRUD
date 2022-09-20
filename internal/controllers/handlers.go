@@ -17,6 +17,10 @@ type ResponseHTTP struct {
 	Message string      `json:"message"`
 }
 
+var crudService book.CrudService = &book.Book{}
+var registrationService user.RegistrationService = &user.User{}
+var db book.CrudRepository = &book.DbConfiguration{}
+
 // @host localhost:8080
 func RouterCreation() {
 	app := fiber.New()
@@ -24,9 +28,9 @@ func RouterCreation() {
 	app.Get("/api/books/:id", findBookById)
 	app.Get("/api/books", getAllBooks)
 	app.Post("/api/books", createNewBook)
+	app.Put("/api/books", updateBook)
 	app.Post("/auth/sign-up", signUp)
 	app.Post("/auth/sign-in", signIn)
-
 	log.Fatal(app.Listen(":8080"))
 }
 
@@ -46,7 +50,7 @@ func signIn(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	token := user.SignIn(u.Name, u.Password)
+	token := registrationService.SignIn(u.Name, u.Password)
 	return ctx.JSON(ResponseHTTP{true, u.Name, token})
 }
 
@@ -66,7 +70,7 @@ func signUp(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	user.SignUp(u.Name, u.Password)
+	registrationService.SignUp(u.Name, u.Password)
 	return ctx.JSON(ResponseHTTP{true, u.Name, "signed-up"})
 }
 
@@ -88,8 +92,31 @@ func createNewBook(ctx *fiber.Ctx) error {
 	}
 	b := new(book.Book)
 	err = ctx.BodyParser(b)
-	book.CreateNewBook(*b)
+	crudService.CreateNewBook(*b, db)
+	//book.CreateNewBook(*b)
 	return ctx.JSON(ResponseHTTP{true, b.Name, "Book was successfully created"})
+}
+
+// UpdateBook is a function to update an existed book
+// @Summary Book's update
+// @Description Update new book
+// @Security ApiKeyAuth
+// @Tags book
+// @Accept json
+// @Produce json
+// @Param book body book.Book true "1, Some-Book, 200"
+// @Failure 404 {object} ResponseHTTP{}
+// @Failure 503 {object} ResponseHTTP{}
+// @Router /api/books [put]
+func updateBook(ctx *fiber.Ctx) error {
+	_, err := jwtValidation(ctx)
+	if err != nil {
+		return err
+	}
+	b := new(book.Book)
+	err = ctx.BodyParser(b)
+	crudService.UpdateBook(*b, db)
+	return ctx.JSON(ResponseHTTP{true, b.Name, "Book was successfully updated"})
 }
 
 // GetBooks is a function to get all book
@@ -103,7 +130,11 @@ func createNewBook(ctx *fiber.Ctx) error {
 // @Failure 503 {object} ResponseHTTP{}
 // @Router /api/books [get]
 func getAllBooks(ctx *fiber.Ctx) error {
-	return ctx.JSON(book.GetAllBooks())
+	_, err := jwtValidation(ctx)
+	if err != nil {
+		return err
+	}
+	return ctx.JSON(crudService.GetAllBooks(db))
 }
 
 // GetBookByID is a function to get a book by ID
@@ -125,7 +156,7 @@ func findBookById(c *fiber.Ctx) error {
 	msg := c.Params("id")
 	log.Println(msg)
 	idAsInt, _ := strconv.Atoi(msg)
-	b := book.GetBookById(idAsInt)
+	b := crudService.GetBookById(idAsInt, db)
 	return c.JSON(b)
 }
 
@@ -135,7 +166,7 @@ func jwtValidation(c *fiber.Ctx) (user.User, error) {
 	if jwtToken == "" {
 		return user.User{}, fmt.Errorf("did't find out a token")
 	}
-	u := user.ReadToken(jwtToken)
+	u := registrationService.ReadToken(jwtToken)
 	fmt.Println(u)
 	return u, nil
 }
